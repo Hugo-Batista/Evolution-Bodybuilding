@@ -1,0 +1,21 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body{
+
+    background-image: url(assets/Imagen-fit2.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+        height: 100vh;
+}
+
+.dash-container{
+display: flex;
+justify-content: center;
+align-items: center;
+background-color: #fff;
+}

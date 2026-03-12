@@ -56,13 +56,20 @@ outline: none
 }
 
 .btn{
-    font-size: 14px ;
+font-size: 14px ;
 background-color: black;
 color: #fff;
 width: 35vh;
 padding: 6px;
 border-radius: 8px;
 cursor: pointer;
+}
+
+.message-paragraph{
+text-align: center;
+margin-top: 10px;
+font-size: 14px;
+font-weight: bold;
 }
 
 .btn:hover{
@@ -84,6 +91,8 @@ display: flex;
 justify-content: center;
 gap: 8px;
 }
+
+
 
 @media (max-width: 480px) {
 .container{

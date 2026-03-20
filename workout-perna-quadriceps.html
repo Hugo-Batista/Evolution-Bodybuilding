@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <title>Treino Perna (Quadríceps) - Academia</title>
+</head>
+
+<body>
+  <div class="dash-container">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <h2><i class="fas fa-dumbbell"></i> Academia</h2>
+        <p class="sidebar-subtitle">Painel de treinos</p>
+      </div>
+
+      <nav class="navegacao">
+        <ul>
+          <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+          <li><a href="profile.html"><i class="fas fa-user"></i> Meu Perfil</a></li>
+          <li><a href="history.html"><i class="fas fa-history"></i> Histórico</a></li>
+          <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1><i class="fas fa-running"></i> Perna (Quadríceps)</h1>
+          <p class="welcome">Treino para quadríceps fortes e equilibrados</p>
+        </div>
+        <div class="header-actions">
+          <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
+        </div>
+      </header>
+
+      <section class="workout-exercises">
+        <div class="exercise" data-exercise="agachamento">
+          <h3>Agachamento</h3>
+          <p>3 séries de 12 repetições</p>
+          <div class="sets">
+            <label><input type="checkbox" data-set="1"> Série 1</label>
+            <label><input type="checkbox" data-set="2"> Série 2</label>
+            <label><input type="checkbox" data-set="3"> Série 3</label>
+          </div>
+        </div>
+
+        <div class="exercise" data-exercise="leg-press">
+          <h3>Leg Press</h3>
+          <p>3 séries de 10 repetições</p>
+          <div class="sets">
+            <label><input type="checkbox" data-set="1"> Série 1</label>
+            <label><input type="checkbox" data-set="2"> Série 2</label>
+            <label><input type="checkbox" data-set="3"> Série 3</label>
+          </div>
+        </div>
+
+        <div class="exercise" data-exercise="extensao-pernas">
+          <h3>Extensão de Pernas</h3>
+          <p>3 séries de 15 repetições</p>
+          <div class="sets">
+            <label><input type="checkbox" data-set="1"> Série 1</label>
+            <label><input type="checkbox" data-set="2"> Série 2</label>
+            <label><input type="checkbox" data-set="3"> Série 3</label>
+          </div>
+        </div>
+      </section>
+
+      <section class="workout-actions">
+        <button id="saveProgress" class="btn-primary">Salvar Progresso</button>
+        <button id="resetProgress" class="btn-secondary">Reiniciar</button>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="workout.js"></script>
+</body>
+
+</html>

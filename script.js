@@ -1,38 +1,77 @@
 
-const inputEmail = document.getElementById("email-usuario")
-const inputSenha = document.getElementById("senha-usuario")
-const button = document.getElementById("button")
-const Valorparagrafo = document.getElementById("message")
+const inputEmail = document.getElementById("email-usuario");
+const inputSenha = document.getElementById("senha-usuario");
+const button = document.getElementById("button");
+const messageEl = document.getElementById("message");
 
-
-
-
-button.addEventListener("click", (event) => { 
-    event.preventDefault(); // Isso impede que a página recarregue e limpe o console, pois o Botao esta denfto de um <Form/> no Index.
-const valorEmail = inputEmail.value;
-const valorSenha = inputSenha.value;
-
-if (valorEmail === "Hugobatista.89@hotmail.com" && valorSenha === "123456" ){
-
-Valorparagrafo.textContent = "Acesso permitido! Redirecionando...";
-Valorparagrafo.style.color = "green";
-
-setTimeout(() => {
-window.location.href = "dashboard.html";
-}, 1000);
-
-
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem("users") || "[]");
+  } catch {
+    return [];
   }
-
-else{
-    Valorparagrafo.textContent = "E-mail ou senha Incorretos";
-    Valorparagrafo.style.color = "red";
 }
 
-inputEmail.value = "";
-inputSenha.value = "";
-})
+function setUsers(users) {
+  localStorage.setItem("users", JSON.stringify(users));
+}
 
-// === Esse é um operador de Comparação 
-// && Esse é um Operador Logico de Confirmação
+function showMessage(text, color) {
+  messageEl.textContent = text;
+  messageEl.style.color = color;
+}
+
+function loginSuccess(email) {
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("userEmail", email);
+  showMessage("Acesso permitido! Redirecionando...", "green");
+  setTimeout(() => {
+    window.location.href = "dashboard.html";
+  }, 800);
+}
+
+function loginFailure() {
+  showMessage("E-mail ou senha incorretos", "red");
+}
+
+function seedDefaultUser() {
+  const users = getUsers();
+  const defaultUser = { name: "Administrador", email: "hugobatista.89@hotmail.com", password: "123456" };
+  const exists = users.find((u) => u.email === defaultUser.email);
+  if (!exists) {
+    users.push(defaultUser);
+    setUsers(users);
+  }
+}
+
+
+button.addEventListener("click", (event) => {
+  event.preventDefault();
+
+  const valorEmail = inputEmail.value.trim().toLowerCase();
+  const valorSenha = inputSenha.value;
+
+  if (!valorEmail || !valorSenha) {
+    showMessage("Preencha e-mail e senha", "orange");
+    return;
+  }
+
+  const user = getUsers().find((u) => u.email === valorEmail);
+  if (user && user.password === valorSenha) {
+    loginSuccess(user.email);
+  } else {
+    loginFailure();
+  }
+
+  inputEmail.value = "";
+  inputSenha.value = "";
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  seedDefaultUser();
+
+  if (localStorage.getItem("loggedIn") === "true") {
+    window.location.href = "dashboard.html";
+  }
+});
 

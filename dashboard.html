@@ -9,51 +9,68 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="dashboard.css">
-    <title>Acesso painel - Academia</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <title>Acesso painel - Academia</title>
 </head>
 
 <body>
+  <div class="dash-container">
 
-    <div class="dash-container">
-        <aside class="sidebar">
-            <h2>Bem vindo!</h2>
-            <nav>
-                <ul>
-                    <li> <a href="">Meu Perfil</a></li>
-                    <li> <a href="index.html">Sair</a></li>
-                </ul>
-            </nav>
-        </aside>
-    </div>
+    <aside class="sidebar">
+      <div class="brand">
+        <h2><i class="fas fa-dumbbell"></i> Academia</h2>
+        <p class="sidebar-subtitle">Painel de treinos</p>
+      </div>
 
-    <main class="main-contant">
-        <header class="main-header">
-            <h1>Minha Ficha</h1>
-        </header>
+      <nav class="navegacao">
+        <ul>
+          <li><a class="perfil" href="profile.html" id="perfilLink"><i class="fas fa-user"></i> Meu Perfil</a></li>
+          <li><a class="history" href="history.html"><i class="fas fa-history"></i> Histórico</a></li>
+          <li><a class="sair" href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Sair</a></li>
+        </ul>
+      </nav>
+    </aside>
 
-        <section class="main-section">
+    <main class="main-content">
+      <header class="main-header">
+        <div>
+          <h1>Minha Ficha</h1>
+          <p class="welcome">Bem-vindo, <span id="user-email">Usuário</span></p>
+        </div>
+        <div class="header-actions">
+          <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
+        </div>
+      </header>
 
-            <div class="card">
-                <a href="">Peito / Ombro / Triceps</a>
-            </div>
+      <section class="workout-grid">
+        <button type="button" class="card" data-workout="peito">
+          <i class="fas fa-heart"></i>
+          <span>Peito / Ombro / Tríceps</span>
+        </button>
+        <button type="button" class="card" data-workout="costa">
+          <i class="fas fa-backward"></i>
+          <span>Costa / Bíceps</span>
+        </button>
+        <button type="button" class="card" data-workout="perna-quadriceps">
+          <i class="fas fa-running"></i>
+          <span>Perna (Quadríceps)</span>
+        </button>
+        <button type="button" class="card" data-workout="perna-posteriores">
+          <i class="fas fa-walking"></i>
+          <span>Perna (Posteriores)</span>
+        </button>
+      </section>
 
-            <div class="card">
-                <a href="">Costa / Biceps</a>
-            </div>
-
-            <div class="card">
-                <a href="">Perna Quadríceps </a>
-            </div>
-
-            <div class="card">
-                <a href="">Perna Posteriores </a>
-            </div>
-
-        </section>
-
+      <section class="workout-details" aria-live="polite">
+        <h2>Detalhes do treino</h2>
+        <p id="workout-details-text">Selecione um treino acima para ver o plano.</p>
+      </section>
     </main>
 
+  </div>
+
+  <script src="dashboard.js"></script>
 </body>
 
 </html>

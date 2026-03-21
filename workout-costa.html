@@ -43,33 +43,74 @@
       </header>
 
       <section class="workout-exercises">
-        <div class="exercise" data-exercise="remada-curvada">
-          <h3>Remada Curvada</h3>
-          <p>3 séries de 12 repetições</p>
-          <div class="sets">
-            <label><input type="checkbox" data-set="1"> Série 1</label>
-            <label><input type="checkbox" data-set="2"> Série 2</label>
-            <label><input type="checkbox" data-set="3"> Série 3</label>
-          </div>
-        </div>
+        <table class="workout-table">
+          <thead>
+            <tr>
+              <th>Equipamento</th>
+              <th>Séries</th>
+              <th>Repetição</th>
+              <th>Descanso</th>
+              <th>Observação</th>
+              <th>Completo</th>
+              <th>Guia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="exercise" data-exercise="remada-curvada" data-image="https://i.imgur.com/QJRgZmA.png">
+              <td>Remada Curvada</td>
+              <td>4</td>
+              <td>10-12</td>
+              <td>60</td>
+              <td>Mantenha coluna neutra</td>
+              <td class="sets">
+                <label><input type="checkbox" data-set="1"></label>
+                <label><input type="checkbox" data-set="2"></label>
+                <label><input type="checkbox" data-set="3"></label>
+                <label><input type="checkbox" data-set="4"></label>
+              </td>
+              <td><button class="action-btn" data-view="remada-curvada">Ver</button></td>
+            </tr>
+            <tr class="exercise" data-exercise="puxada-frontal" data-image="https://i.imgur.com/16xkF3J.png">
+              <td>Puxada Frontal</td>
+              <td>4</td>
+              <td>10-12</td>
+              <td>60</td>
+              <td>Controle na subida</td>
+              <td class="sets">
+                <label><input type="checkbox" data-set="1"></label>
+                <label><input type="checkbox" data-set="2"></label>
+                <label><input type="checkbox" data-set="3"></label>
+                <label><input type="checkbox" data-set="4"></label>
+              </td>
+              <td><button class="action-btn" data-view="puxada-frontal">Ver</button></td>
+            </tr>
+            <tr class="exercise" data-exercise="rosca-direta" data-image="https://i.imgur.com/WmZyT3I.png">
+              <td>Rosca Direta</td>
+              <td>4</td>
+              <td>10-12</td>
+              <td>45</td>
+              <td>Não balance o corpo</td>
+              <td class="sets">
+                <label><input type="checkbox" data-set="1"></label>
+                <label><input type="checkbox" data-set="2"></label>
+                <label><input type="checkbox" data-set="3"></label>
+                <label><input type="checkbox" data-set="4"></label>
+              </td>
+              <td><button class="action-btn" data-view="rosca-direta">Ver</button></td>
+            </tr>
+          </tbody>
+        </table>
 
-        <div class="exercise" data-exercise="puxada-frontal">
-          <h3>Puxada Frontal</h3>
-          <p>3 séries de 10 repetições</p>
-          <div class="sets">
-            <label><input type="checkbox" data-set="1"> Série 1</label>
-            <label><input type="checkbox" data-set="2"> Série 2</label>
-            <label><input type="checkbox" data-set="3"> Série 3</label>
-          </div>
-        </div>
-
-        <div class="exercise" data-exercise="rosca-direta">
-          <h3>Rosca Direta</h3>
-          <p>3 séries de 12 repetições</p>
-          <div class="sets">
-            <label><input type="checkbox" data-set="1"> Série 1</label>
-            <label><input type="checkbox" data-set="2"> Série 2</label>
-            <label><input type="checkbox" data-set="3"> Série 3</label>
+        <div class="workout-modal" id="workoutModal">
+          <div class="modal-content">
+            <header>
+              <h3 id="modalTitle">Exercício</h3>
+              <button class="close-btn" id="closeModal">×</button>
+            </header>
+            <div class="content-body">
+              <img id="modalImage" src="" alt="Demonstração do exercício">
+              <p id="modalText">Use o botão Ver em algum exercício.</p>
+            </div>
           </div>
         </div>
       </section>

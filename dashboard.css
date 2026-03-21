@@ -339,6 +339,129 @@ body.dark-theme .exercise p {
   cursor: pointer;
 }
 
+.workout-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.workout-table th,
+.workout-table td {
+  padding: 14px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.workout-table th {
+  background: rgba(0, 123, 255, 0.08);
+  font-weight: 600;
+  color: #222;
+  font-size: 0.95rem;
+}
+
+.workout-table tr:last-child td {
+  border-bottom: none;
+}
+
+.workout-table .badge {
+  display: inline-block;
+  background: #2ecc71;
+  color: #fff;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+}
+
+.workout-table .action-btn {
+  font-size: 0.85rem;
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 820px) {
+  .workout-exercises {
+    overflow-x: auto;
+  }
+
+  .workout-table {
+    min-width: 700px;
+  }
+}
+
+.workout-table .action-btn:hover {
+  background: #0056b3;
+}
+
+.workout-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 20;
+}
+
+.workout-modal.active {
+  display: grid;
+}
+
+.workout-modal .modal-content {
+  background: #fff;
+  width: min(90vw, 540px);
+  border-radius: 14px;
+  overflow: hidden;
+  animation: fadeInUp 0.25s ease;
+}
+
+.workout-modal header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.workout-modal h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1a1a1a;
+}
+
+.workout-modal .close-btn {
+  background: #ff4d4f;
+  border: none;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.workout-modal .content-body {
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.workout-modal img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+@keyframes fadeInUp {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
 .workout-actions {
   display: flex;
   gap: 15px;

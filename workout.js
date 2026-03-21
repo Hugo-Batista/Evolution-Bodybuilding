@@ -26,7 +26,8 @@ function setWorkoutProgress(workout, progress) {
 
 function loadProgress() {
   const url = window.location.pathname;
-  const workout = url.split("-")[1].replace(".html", ""); // e.g., "peito"
+  const match = url.match(/workout-(.+)\.html$/);
+  const workout = match ? match[1] : "";
 
   const progress = getWorkoutProgress(workout);
 
@@ -45,7 +46,8 @@ function loadProgress() {
 
 function saveProgress() {
   const url = window.location.pathname;
-  const workout = url.split("-")[1].replace(".html", "");
+  const match = url.match(/workout-(.+)\.html$/);
+  const workout = match ? match[1] : "";
 
   const progress = {};
 
@@ -66,7 +68,8 @@ function saveProgress() {
 function resetProgress() {
   if (confirm("Tem certeza que deseja reiniciar o progresso?")) {
     const url = window.location.pathname;
-    const workout = url.split("-")[1].replace(".html", "");
+    const match = url.match(/workout-(.+)\.html$/);
+    const workout = match ? match[1] : "";
 
     const progress = {};
     setWorkoutProgress(workout, progress);
@@ -80,6 +83,40 @@ function resetProgress() {
 
     alert("Progresso reiniciado!");
   }
+}
+
+function setupExerciseModals() {
+  const modal = document.getElementById("workoutModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalImage = document.getElementById("modalImage");
+  const modalText = document.getElementById("modalText");
+  const closeModal = document.getElementById("closeModal");
+
+  if (!modal) return;
+
+  document.querySelectorAll(".action-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const exerciseRow = btn.closest(".exercise");
+      const title = exerciseRow ? exerciseRow.querySelector("td")?.textContent : "Exercício";
+      const image = exerciseRow ? exerciseRow.dataset.image : "";
+      const obs = exerciseRow ? exerciseRow.querySelector("td:nth-child(5)")?.textContent : "";
+
+      modalTitle.textContent = title || "Exercício";
+      modalImage.src = image || "https://i.imgur.com/YaIYE2I.png";
+      modalText.textContent = obs ? `Dica: ${obs}` : "Mantenha a postura correta e execute com calma.";
+      modal.classList.add("active");
+    });
+  });
+
+  closeModal.addEventListener("click", () => {
+    modal.classList.remove("active");
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.remove("active");
+    }
+  });
 }
 
 function logout() {
@@ -135,4 +172,5 @@ window.addEventListener("DOMContentLoaded", () => {
   ensureLoggedIn();
   loadTheme();
   loadProgress();
+  setupExerciseModals();
 });

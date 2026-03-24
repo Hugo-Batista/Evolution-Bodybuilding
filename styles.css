@@ -102,6 +102,21 @@ padding: 20px;
 
 .btn{
 padding: 12px;
+width: 100%;
+font-size: 16px;
 }
 
+.input{
+font-size: 16px;
+padding: 10px;
+}
+
+.signup-footer{
+font-size: 14px;
+}
+
+body{
+background-position: center;
+background-attachment: fixed;
+}
 }

@@ -35,14 +35,27 @@
       <header class="main-header">
         <div>
           <h1><i class="fas fa-history"></i> Histórico de Treinos</h1>
-          <p class="welcome">Acompanhe seu progresso</p>
+          <p class="welcome">Consulte como foi seu treino em qualquer dia salvo</p>
         </div>
         <div class="header-actions">
           <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
         </div>
       </header>
 
+      <section class="history-toolbar">
+        <div class="history-filter-card">
+          <label for="historyDate">Buscar treino por data</label>
+          <div class="history-filter-row">
+            <input type="date" id="historyDate">
+            <button id="consultDateFilter" class="btn-secondary" type="button">Consultar</button>
+          </div>
+          <p class="history-helper">Selecione um dia e consulte os treinos salvos nessa data.</p>
+          <p id="historyFilterStatus" class="history-filter-status"></p>
+        </div>
+      </section>
+
       <section class="history-content">
+        <div id="historySummary" class="history-summary"></div>
         <div id="historyList">
           <!-- Histórico será carregado aqui -->
         </div>

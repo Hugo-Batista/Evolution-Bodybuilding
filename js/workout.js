@@ -34,6 +34,13 @@ function setWorkoutProgress(workout, progress) {
   localStorage.setItem(key, JSON.stringify(progress));
 }
 
+function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function loadProgress() {
   const url = window.location.pathname;
   const match = url.match(/workout-(.+)\.html$/);
@@ -64,23 +71,36 @@ function saveProgress() {
   const workout = match ? match[1] : "";
 
   const sets = {};
+  const exerciseHistory = [];
   let completedSets = 0;
   let totalSets = 0;
 
   exercises.forEach((exercise, exerciseIndex) => {
     const exerciseName = exercise.dataset.exercise;
     const checkboxes = exercise.querySelectorAll("input[type='checkbox']");
+    const exerciseLabel = exercise.querySelector("td")?.textContent?.trim() || `Exercício ${exerciseIndex + 1}`;
+    let exerciseCompletedSets = 0;
+    const exerciseTotalSets = checkboxes.length;
 
     checkboxes.forEach((checkbox, index) => {
       const setKey = `${exerciseName}_${exerciseIndex}_set${index + 1}`;
       sets[setKey] = checkbox.checked;
       totalSets++;
-      if (checkbox.checked) completedSets++;
+      if (checkbox.checked) {
+        completedSets++;
+        exerciseCompletedSets++;
+      }
+    });
+
+    exerciseHistory.push({
+      name: exerciseLabel,
+      completedSets: exerciseCompletedSets,
+      totalSets: exerciseTotalSets
     });
   });
 
   const today = new Date();
-  const todayKey = today.toISOString().split("T")[0]; // YYYY-MM-DD
+  const todayKey = getLocalDateKey(today);
   const formattedDate = today.toLocaleDateString("pt-BR");
 
   const currentProgress = getWorkoutProgress(workout);
@@ -94,6 +114,7 @@ function saveProgress() {
     completedSets,
     totalSets,
     percent: totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0,
+    exercises: exerciseHistory,
     timestamp: Date.now()
   };
 
@@ -117,10 +138,11 @@ function resetProgress() {
     const url = window.location.pathname;
     const match = url.match(/workout-(.+)\.html$/);
     const workout = match ? match[1] : "";
+    const currentProgress = getWorkoutProgress(workout);
 
     setWorkoutProgress(workout, {
       sets: {},
-      history: []
+      history: currentProgress.history || []
     });
 
     exercises.forEach((exercise) => {

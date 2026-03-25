@@ -1,6 +1,10 @@
 const logoutLink = document.getElementById("logoutLink");
 const themeToggle = document.getElementById("themeToggle");
 const historyList = document.getElementById("historyList");
+const historySummary = document.getElementById("historySummary");
+const historyDateInput = document.getElementById("historyDate");
+const consultDateFilterBtn = document.getElementById("consultDateFilter");
+const historyFilterStatus = document.getElementById("historyFilterStatus");
 
 const WORKOUT_NAMES = {
   "peito": "Peito / Ombro / Tríceps",
@@ -17,46 +21,221 @@ function getWorkoutProgress(workout) {
   const user = getCurrentUser();
   const key = `progress_${user}_${workout}`;
   try {
-    return JSON.parse(localStorage.getItem(key) || "{}");
+    const raw = JSON.parse(localStorage.getItem(key) || "{}");
+    if (raw && raw.sets) {
+      return {
+        sets: raw.sets || {},
+        history: Array.isArray(raw.history) ? raw.history : []
+      };
+    }
+
+    return {
+      sets: raw || {},
+      history: []
+    };
   } catch {
-    return {};
+    return {
+      sets: {},
+      history: []
+    };
   }
+}
+
+function setWorkoutProgress(workout, progress) {
+  const user = getCurrentUser();
+  const key = `progress_${user}_${workout}`;
+  localStorage.setItem(key, JSON.stringify(progress));
+}
+
+function getLocalDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getSortedHistory(history) {
+  return [...history].sort((left, right) => {
+    const leftValue = left.timestamp || new Date(left.dateKey || 0).getTime();
+    const rightValue = right.timestamp || new Date(right.dateKey || 0).getTime();
+    return rightValue - leftValue;
+  });
+}
+
+function formatDateLabel(dateValue) {
+  if (!dateValue) {
+    return "";
+  }
+
+  const [year, month, day] = dateValue.split("-");
+  if (!year || !month || !day) {
+    return dateValue;
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+function buildSummaryCards(workouts, selectedDate = "") {
+  let summaryHTML = "";
+
+  workouts.forEach((workout) => {
+    const progressData = getWorkoutProgress(workout);
+    const history = getSortedHistory(progressData.history || []);
+    const latestEntry = selectedDate
+      ? history.find((entry) => entry.dateKey === selectedDate)
+      : history[0];
+
+    if (!latestEntry) {
+      return;
+    }
+
+    summaryHTML += `
+      <article class="history-item history-summary-card">
+        <h3>${WORKOUT_NAMES[workout]}</h3>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${latestEntry.percent}%"></div>
+        </div>
+        <p>${latestEntry.completedSets} de ${latestEntry.totalSets} séries concluídas (${latestEntry.percent}%)</p>
+        <small>${selectedDate ? `Treino consultado em ${latestEntry.dateLabel}` : `Último treino salvo em ${latestEntry.dateLabel}`}</small>
+      </article>
+    `;
+  });
+
+  historySummary.innerHTML = summaryHTML || "";
+}
+
+function collectHistoryEntries(workouts) {
+  const entries = [];
+
+  workouts.forEach((workout) => {
+    const progressData = getWorkoutProgress(workout);
+    const history = getSortedHistory(progressData.history || []);
+
+    history.forEach((entry) => {
+      entries.push({
+        workout,
+        workoutName: WORKOUT_NAMES[workout],
+        ...entry
+      });
+    });
+  });
+
+  return entries.sort((left, right) => {
+    const leftValue = left.timestamp || new Date(left.dateKey || 0).getTime();
+    const rightValue = right.timestamp || new Date(right.dateKey || 0).getTime();
+    return rightValue - leftValue;
+  });
+}
+
+function renderHistoryEntries(entries) {
+  if (!entries.length) {
+    historyList.innerHTML = "<p class='no-history'>Nenhum treino encontrado para a data selecionada.</p>";
+    return;
+  }
+
+  const groupedByDate = entries.reduce((accumulator, entry) => {
+    if (!accumulator[entry.dateKey]) {
+      accumulator[entry.dateKey] = [];
+    }
+
+    accumulator[entry.dateKey].push(entry);
+    return accumulator;
+  }, {});
+
+  const groupedHTML = Object.keys(groupedByDate)
+    .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())
+    .map((dateKey) => {
+      const dateEntries = groupedByDate[dateKey];
+      const dateLabel = dateEntries[0].dateLabel;
+      const cards = dateEntries.map((entry) => {
+        const exerciseLines = Array.isArray(entry.exercises) && entry.exercises.length
+          ? `
+            <ul class="history-exercise-list">
+              ${entry.exercises.map((exercise) => `<li>${exercise.name}: ${exercise.completedSets}/${exercise.totalSets} séries</li>`).join("")}
+            </ul>
+          `
+          : "";
+
+        return `
+          <article class="history-item history-entry-card">
+            <div class="history-entry-head">
+              <h3>${entry.workoutName}</h3>
+              <div class="history-entry-actions">
+                <span class="history-badge">${entry.percent}%</span>
+                <button class="history-delete-btn" type="button" data-workout="${entry.workout}" data-date-key="${entry.dateKey}">Excluir</button>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${entry.percent}%"></div>
+            </div>
+            <p>${entry.completedSets} de ${entry.totalSets} séries concluídas</p>
+            ${exerciseLines}
+          </article>
+        `;
+      }).join("");
+
+      return `
+        <section class="history-day-group">
+          <div class="history-day-header">
+            <h2>${dateLabel}</h2>
+            <span>${dateEntries.length} treino(s) salvo(s)</span>
+          </div>
+          <div class="history-day-grid">
+            ${cards}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+
+  historyList.innerHTML = groupedHTML;
 }
 
 function loadHistory() {
   const workouts = Object.keys(WORKOUT_NAMES);
-  let historyHTML = "";
+  const selectedDate = historyDateInput?.value || "";
+  const selectedDateLabel = formatDateLabel(selectedDate);
 
-  workouts.forEach((workout) => {
-    const progressData = getWorkoutProgress(workout);
-    const sets = progressData.sets || {};
-    const history = progressData.history || [];
-    const completedSets = Object.values(sets).filter(Boolean).length;
-    const totalSets = Object.keys(sets).length;
-
-    if (totalSets > 0 || history.length > 0) {
-      const percentage = totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
-      const latestEntry = history[0] || null;
-      const dayText = latestEntry ? `Último treino em ${latestEntry.dateLabel} (${latestEntry.completedSets} de ${latestEntry.totalSets})` : "Treinos salvos, mas sem data";
-
-      historyHTML += `
-        <div class="history-item">
-          <h3>${WORKOUT_NAMES[workout]}</h3>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${percentage}%"></div>
-          </div>
-          <p>${completedSets} de ${totalSets} séries concluídas (${percentage}%)</p>
-          <small>${dayText}</small>
-        </div>
-      `;
+  const entries = collectHistoryEntries(workouts);
+  if (!entries.length) {
+    buildSummaryCards(workouts, selectedDate);
+    if (historyFilterStatus) {
+      historyFilterStatus.textContent = selectedDateLabel
+        ? `Nenhum treino salvo em ${selectedDateLabel}.`
+        : "Nenhum filtro aplicado. Exibindo todos os treinos salvos.";
     }
-  });
-
-  if (!historyHTML) {
-    historyHTML = "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no dashboard!</p>";
+    historyList.innerHTML = "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no dashboard!</p>";
+    return;
   }
 
-  historyList.innerHTML = historyHTML;
+  const filteredEntries = selectedDate
+    ? entries.filter((entry) => entry.dateKey === selectedDate)
+    : entries;
+
+  buildSummaryCards(workouts, selectedDate);
+
+  if (historyFilterStatus) {
+    historyFilterStatus.textContent = selectedDateLabel
+      ? filteredEntries.length
+        ? `Consultando treinos salvos em ${selectedDateLabel}.`
+        : `Nenhum treino salvo em ${selectedDateLabel}.`
+      : "Nenhum filtro aplicado. Exibindo todos os treinos salvos.";
+  }
+
+  renderHistoryEntries(filteredEntries);
+}
+
+function deleteHistoryEntry(workout, dateKey) {
+  const progressData = getWorkoutProgress(workout);
+  const updatedHistory = (progressData.history || []).filter((entry) => entry.dateKey !== dateKey);
+  const isTodayEntry = dateKey === getLocalDateKey();
+
+  setWorkoutProgress(workout, {
+    sets: isTodayEntry ? {} : (progressData.sets || {}),
+    history: updatedHistory
+  });
+
+  loadHistory();
 }
 
 function logout() {
@@ -98,6 +277,35 @@ logoutLink.addEventListener("click", (event) => {
 
 if (themeToggle) {
   themeToggle.addEventListener("click", toggleTheme);
+}
+
+if (consultDateFilterBtn) {
+  consultDateFilterBtn.addEventListener("click", () => {
+    loadHistory();
+  });
+}
+
+if (historyList) {
+  historyList.addEventListener("click", (event) => {
+    const deleteButton = event.target.closest(".history-delete-btn");
+    if (!deleteButton) {
+      return;
+    }
+
+    const workout = deleteButton.dataset.workout;
+    const dateKey = deleteButton.dataset.dateKey;
+
+    if (!workout || !dateKey) {
+      return;
+    }
+
+    const confirmed = window.confirm("Deseja apagar este treino salvo do histórico?");
+    if (!confirmed) {
+      return;
+    }
+
+    deleteHistoryEntry(workout, dateKey);
+  });
 }
 
 window.addEventListener("DOMContentLoaded", () => {

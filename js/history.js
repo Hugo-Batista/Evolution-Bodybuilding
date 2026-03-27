@@ -25,18 +25,24 @@ function getWorkoutProgress(workout) {
     if (raw && raw.sets) {
       return {
         sets: raw.sets || {},
-        history: Array.isArray(raw.history) ? raw.history : []
+        history: Array.isArray(raw.history) ? raw.history : [],
+        lastSavedAt: typeof raw.lastSavedAt === "number" ? raw.lastSavedAt : 0,
+        lastSavedDateKey: raw.lastSavedDateKey || ""
       };
     }
 
     return {
       sets: raw || {},
-      history: []
+      history: [],
+      lastSavedAt: 0,
+      lastSavedDateKey: ""
     };
   } catch {
     return {
       sets: {},
-      history: []
+      history: [],
+      lastSavedAt: 0,
+      lastSavedDateKey: ""
     };
   }
 }
@@ -127,6 +133,15 @@ function collectHistoryEntries(workouts) {
   });
 }
 
+function hasLegacyProgressWithoutHistory(workouts) {
+  return workouts.some((workout) => {
+    const progressData = getWorkoutProgress(workout);
+    const totalSets = Object.keys(progressData.sets || {}).length;
+    const hasHistory = Array.isArray(progressData.history) && progressData.history.length > 0;
+    return totalSets > 0 && !hasHistory;
+  });
+}
+
 function renderHistoryEntries(entries) {
   if (!entries.length) {
     historyList.innerHTML = "<p class='no-history'>Nenhum treino encontrado para a data selecionada.</p>";
@@ -199,12 +214,20 @@ function loadHistory() {
   const entries = collectHistoryEntries(workouts);
   if (!entries.length) {
     buildSummaryCards(workouts, selectedDate);
+    const hasLegacyData = hasLegacyProgressWithoutHistory(workouts);
+
     if (historyFilterStatus) {
-      historyFilterStatus.textContent = selectedDateLabel
-        ? `Nenhum treino salvo em ${selectedDateLabel}.`
-        : "Nenhum filtro aplicado. Exibindo todos os treinos salvos.";
+      if (hasLegacyData) {
+        historyFilterStatus.textContent = "Existe progresso antigo sem data registrada. Abra o treino e clique em Salvar Progresso para migrar para o novo histórico por data.";
+      } else {
+        historyFilterStatus.textContent = selectedDateLabel
+          ? `Nenhum treino salvo em ${selectedDateLabel}.`
+          : "Nenhum filtro aplicado. Exibindo todos os treinos salvos.";
+      }
     }
-    historyList.innerHTML = "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no dashboard!</p>";
+    historyList.innerHTML = hasLegacyData
+      ? "<p class='no-history'>Seu progresso antigo foi encontrado, mas ainda sem data. Entre no treino e clique em Salvar Progresso para registrar a data automaticamente.</p>"
+      : "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no dashboard!</p>";
     return;
   }
 

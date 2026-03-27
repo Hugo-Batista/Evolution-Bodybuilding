@@ -3,6 +3,7 @@ const themeToggle = document.getElementById("themeToggle"); // Botão para mudar
 const saveProgressBtn = document.getElementById("saveProgress"); // Botão "Salvar Progresso"
 const resetProgressBtn = document.getElementById("resetProgress"); // Botão "Reiniciar"
 const exercises = Array.from(document.querySelectorAll(".exercise")); // Classe da Tabela "Supino Reto"
+let autoSaveTimer = null;
 
 function getCurrentUser() {
   return localStorage.getItem("userEmail") || "";
@@ -65,7 +66,8 @@ function loadProgress() {
 }
 
 
-function saveProgress() {
+function saveProgress(options = {}) {
+  const { silent = false } = options;
   const url = window.location.pathname;
   const match = url.match(/workout-(.+)\.html$/);
   const workout = match ? match[1] : "";
@@ -126,10 +128,26 @@ function saveProgress() {
 
   setWorkoutProgress(workout, {
     sets,
-    history
+    history,
+    lastSavedAt: Date.now(),
+    lastSavedDateKey: todayKey
   });
 
-  alert("Progresso salvo!");
+  if (!silent) {
+    alert("Progresso salvo!");
+  }
+}
+
+function setupAutoSave() {
+  const checkboxes = document.querySelectorAll(".exercise input[type='checkbox']");
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => {
+        saveProgress({ silent: true });
+      }, 400);
+    });
+  });
 }
 
 
@@ -232,7 +250,7 @@ if (themeToggle) {
 }
 
 if (saveProgressBtn) {
-  saveProgressBtn.addEventListener("click", saveProgress);
+  saveProgressBtn.addEventListener("click", () => saveProgress());
 }
 
 if (resetProgressBtn) {
@@ -243,5 +261,6 @@ window.addEventListener("DOMContentLoaded", () => {
   ensureLoggedIn();
   loadTheme();
   loadProgress();
+  setupAutoSave();
   setupExerciseModals();
 });

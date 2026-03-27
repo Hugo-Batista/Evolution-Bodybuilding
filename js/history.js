@@ -227,7 +227,7 @@ function loadHistory() {
     }
     historyList.innerHTML = hasLegacyData
       ? "<p class='no-history'>Seu progresso antigo foi encontrado, mas ainda sem data. Entre no treino e clique em Salvar Progresso para registrar a data automaticamente.</p>"
-      : "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no dashboard!</p>";
+      : "<p class='no-history'>Nenhum treino iniciado ainda. Comece seus treinos no painel!</p>";
     return;
   }
 

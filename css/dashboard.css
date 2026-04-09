@@ -16,7 +16,7 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  background-attachment: fixed;
+  background-attachment: scroll;
   color: #222;
   transition: background-color 0.3s;
 }
@@ -465,7 +465,33 @@ body.dark-theme .exercise p {
   width: 100%;
   border-radius: 8px;
   object-fit: contain;
+  animation: fadeIn 0.3s ease;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+#imageLoader {
+  color: #ff4500;
+  font-weight: 600;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 
 @keyframes fadeInUp {
   0% { transform: translateY(10px); opacity: 0; }

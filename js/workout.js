@@ -4,6 +4,7 @@ const saveProgressBtn = document.getElementById("saveProgress"); // Botão "Salv
 const resetProgressBtn = document.getElementById("resetProgress"); // Botão "Reiniciar"
 const exercises = Array.from(document.querySelectorAll(".exercise")); // Classe da Tabela "Supino Reto"
 let autoSaveTimer = null;
+let previouslyFocusedElement = null;
 
 function getCurrentUser() {
   return localStorage.getItem("userEmail") || "";
@@ -180,33 +181,91 @@ function setupExerciseModals() {
   const modalImage = document.getElementById("modalImage");
   const modalText = document.getElementById("modalText");
   const closeModal = document.getElementById("closeModal");
+  const imageLoader = document.getElementById("imageLoader");
 
   if (!modal) return;
+
+  function closeModalDialog() {
+    modal.classList.remove("active");
+    if (previouslyFocusedElement && typeof previouslyFocusedElement.focus === "function") {
+      previouslyFocusedElement.focus();
+    }
+  }
+
+  function loadImage(imageUrl) {
+    return new Promise((resolve, reject) => {
+      if (!imageUrl) {
+        reject("Sem URL");
+        return;
+      }
+      const img = new Image();
+      img.onload = () => resolve(imageUrl);
+      img.onerror = () => reject("Erro ao carregar imagem");
+      img.src = imageUrl;
+    });
+  }
 
   document.querySelectorAll(".action-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       const exerciseRow = btn.closest(".exercise");
       const title = exerciseRow ? exerciseRow.querySelector("td")?.textContent : "Exercício";
-      const image = exerciseRow ? exerciseRow.dataset.image : "";
+      const image = exerciseRow ? exerciseRow.dataset.image?.trim() : "";
       const obs = exerciseRow ? exerciseRow.querySelector("td:nth-child(5)")?.textContent : "";
 
       modalTitle.textContent = title || "Exercício";
-      modalImage.src = image || "https://i.imgur.com/YaIYE2I.png";
       modalText.textContent = obs ? `Dica: ${obs}` : "Mantenha a postura correta e execute com calma.";
+      previouslyFocusedElement = btn;
       modal.classList.add("active");
+      closeModal.focus();
+
+      // Mostra loading enquanto carrega
+      imageLoader.style.display = "block";
+      modalImage.style.display = "none";
+
+      // Carrega a imagem
+      const imageToLoad = image || "https://i.imgur.com/YaIYE2I.png";
+      loadImage(imageToLoad)
+        .then((url) => {
+          modalImage.src = url;
+          imageLoader.style.display = "none";
+          modalImage.style.display = "block";
+        })
+        .catch(() => {
+          modalImage.src = "https://i.imgur.com/YaIYE2I.png";
+          imageLoader.style.display = "none";
+          modalImage.style.display = "block";
+        });
+    });
+  });
+
+  // Preload de todas as imagens quando a página carrega
+  window.addEventListener("load", () => {
+    document.querySelectorAll(".exercise[data-image]").forEach((row) => {
+      const imgUrl = row.dataset.image?.trim();
+      if (imgUrl) {
+        const img = new Image();
+        img.src = imgUrl;
+      }
     });
   });
 
   closeModal.addEventListener("click", () => {
-    modal.classList.remove("active");
+    closeModalDialog();
   });
 
   modal.addEventListener("click", (event) => {
     if (event.target === modal) {
-      modal.classList.remove("active");
+      closeModalDialog();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && modal.classList.contains("active")) {
+      closeModalDialog();
     }
   });
 }
+
 
 function logout() {
   localStorage.removeItem("loggedIn");
@@ -224,6 +283,8 @@ function toggleTheme() {
 function updateThemeIcon() {
   const isDark = document.body.classList.contains("dark-theme");
   themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  themeToggle.setAttribute("aria-label", isDark ? "Ativar tema claro" : "Ativar tema escuro");
+  themeToggle.setAttribute("title", isDark ? "Ativar tema claro" : "Ativar tema escuro");
 }
 
 function loadTheme() {

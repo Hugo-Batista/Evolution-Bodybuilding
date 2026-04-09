@@ -41,7 +41,7 @@
         </div>
 
         <div class="header-actions">
-           <button id="themeToggle" class="theme-btn"><i class="fas fa-moon"></i></button>
+           <button id="themeToggle" class="theme-btn" type="button" aria-label="Alternar tema" title="Alternar tema"><i class="fas fa-moon"></i></button>
         </div>
 
       </header>
@@ -214,16 +214,17 @@
           </tbody>
         </table>
 
-        <div class="workout-modal" id="workoutModal">
+        <div class="workout-modal" id="workoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
 
           <div class="modal-content">
             <header>
               <h3 id="modalTitle"></h3>
-              <button class="close-btn" id="closeModal">×</button>
+              <button class="close-btn" id="closeModal" type="button" aria-label="Fechar guia de exercício" title="Fechar">×</button>
             </header>
 
             <div class="content-body">
-              <img id="modalImage" src="" alt="Demonstração do exercício">
+              <div id="imageLoader" style="display:none; text-align:center; padding:20px;"><p>Carregando...</p></div>
+              <img id="modalImage" src="" alt="Demonstração do exercício" style="display:none;">
               <p id="modalText">Use o botão Ver em algum exercício.</p>
             </div>
 

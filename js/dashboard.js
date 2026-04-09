@@ -66,6 +66,8 @@ function toggleTheme() {
 function updateThemeIcon() {
   const isDark = document.body.classList.contains("dark-theme");
   themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  themeToggle.setAttribute("aria-label", isDark ? "Ativar tema claro" : "Ativar tema escuro");
+  themeToggle.setAttribute("title", isDark ? "Ativar tema claro" : "Ativar tema escuro");
 }
 
 function loadTheme() {
